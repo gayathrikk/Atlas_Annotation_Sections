@@ -111,7 +111,7 @@ public class Atlas_Annotation_Data {
             channelGrep.disconnect();
         }
         System.out.println("                                     *************                                              ");
-        System.out.println("Total number of FlatTree JSON files with sizes greater than 70 or ending in 'K': " + jsonFileCount);
+        System.out.println("Total number of FlatTree JSON files with sizes greater than 70 and kb size files: " + jsonFileCount);
         System.out.println("                                     *************                                              ");
         Assert.assertTrue(jsonFileCount > 0, "No FlatTree JSON files found with sizes greater than 70 or ending in 'K'.");
     }
