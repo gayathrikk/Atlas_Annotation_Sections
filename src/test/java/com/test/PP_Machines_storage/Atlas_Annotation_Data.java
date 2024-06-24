@@ -133,7 +133,7 @@ public class Atlas_Annotation_Data {
     }
 
     private static boolean isValidSize(String sizeStr, int threshold) {
-        if (sizeStr.endsWith("K")) {
+         if (sizeStr.endsWith("K") || sizeStr.endsWith("M")) {
             return true;
         } else {
             try {
