@@ -8,7 +8,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Atlas_Annotation_Data {
 
@@ -83,6 +85,7 @@ public class Atlas_Annotation_Data {
     @Test(priority = 3, dependsOnMethods = {"testListFiles"})
     public void testFlatTreeJsonFiles() throws Exception {
         int jsonFileCount = 0;
+        Set<String> validSections = new HashSet<>();
 
         for (String sectionNumber : files) {
             String grepCommand = "ls -alh /store/repos1/iitlab/humanbrain/analytics/" + biosampleId +
@@ -99,19 +102,27 @@ public class Atlas_Annotation_Data {
             BufferedReader readerGrep = new BufferedReader(new InputStreamReader(inGrep));
             String line;
             System.out.println("FlatTree JSON files for section " + sectionNumber + ":");
+            boolean foundValidFile = false;
             while ((line = readerGrep.readLine()) != null) {
                 String[] parts = line.split("\\s+");
                 String sizeStr = parts[4];
                 if (isValidSize(sizeStr, 70)) {
                     System.out.println(line);
                     jsonFileCount++;
+                    foundValidFile = true;
                 }
+            }
+
+            if (foundValidFile) {
+                validSections.add(sectionNumber);
             }
 
             channelGrep.disconnect();
         }
+
         System.out.println("                                     *************                                              ");
         System.out.println("Total number of FlatTree JSON files with sizes greater than 70 and kb size files: " + jsonFileCount);
+        System.out.println("Sections with FlatTree JSON files with sizes greater than 70 and kb size files: " + validSections);
         System.out.println("                                     *************                                              ");
         Assert.assertTrue(jsonFileCount > 0, "No FlatTree JSON files found with sizes greater than 70 or ending in 'K'.");
     }
