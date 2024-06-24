@@ -50,7 +50,7 @@ public class Atlas_Annotation_Data {
         String lsCommand = "cd /store/repos1/iitlab/humanbrain/analytics/" + biosampleId +
                 "/appData/atlasEditor/189/NISL && ls";
 
-        executeCommand(lsCommand, line -> files.add(line));
+        executeCommand(lsCommand, line -> files.add(line.trim()));
 
         logger.info("Number of sections (files) in directory: " + files.size());
         Assert.assertTrue(files.size() > 0, "No files found in the directory.");
@@ -106,24 +106,28 @@ public class Atlas_Annotation_Data {
         Assert.assertTrue(jsonFileCount > 0, "No FlatTree JSON files found with sizes greater than 70 or ending in 'K' or 'M'.");
     }
 
-    private boolean executeCommand(String command, CommandOutputProcessor processor) throws Exception {
-        Channel channel = session.openChannel("exec");
-        ((ChannelExec) channel).setCommand(command);
-        channel.setInputStream(null);
-        ((ChannelExec) channel).setErrStream(System.err);
-
-        InputStream in = channel.getInputStream();
-        channel.connect();
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String line;
+    private boolean executeCommand(String command, CommandOutputProcessor processor) {
         boolean foundValidFile = false;
-        while ((line = reader.readLine()) != null) {
-            processor.process(line);
-            foundValidFile = true;
-        }
+        try {
+            Channel channel = session.openChannel("exec");
+            ((ChannelExec) channel).setCommand(command);
+            channel.setInputStream(null);
+            ((ChannelExec) channel).setErrStream(System.err);
 
-        channel.disconnect();
+            InputStream in = channel.getInputStream();
+            channel.connect();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                processor.process(line);
+                foundValidFile = true;
+            }
+
+            channel.disconnect();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error executing command: " + command, e);
+        }
         return foundValidFile;
     }
 
