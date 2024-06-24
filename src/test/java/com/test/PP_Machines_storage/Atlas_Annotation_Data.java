@@ -86,7 +86,7 @@ public class Atlas_Annotation_Data {
     @Test(priority = 3, dependsOnMethods = {"testListFiles"})
     public void testFlatTreeJsonFiles() throws Exception {
         int jsonFileCount = 0;
-        Set<String> validSections = new TreeSet<>();
+        Set<Integer> validSections = new TreeSet<>();
 
         for (String sectionNumber : files) {
             String grepCommand = "ls -alh /store/repos1/iitlab/humanbrain/analytics/" + biosampleId +
@@ -115,7 +115,11 @@ public class Atlas_Annotation_Data {
             }
 
             if (foundValidFile) {
-                validSections.add(sectionNumber);
+                try {
+                    validSections.add(Integer.parseInt(sectionNumber));
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid section number format: " + sectionNumber);
+                }
             }
 
             channelGrep.disconnect();
